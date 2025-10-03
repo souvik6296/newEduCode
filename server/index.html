@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing</title>
+</head>
+
+<body>
+    <h1>API Testing Page</h1>
+
+    <!-- Universities Section -->
+    <section>
+        <h2>Universities</h2>
+        <div>
+            <h3>Get All Universities</h3>
+            <button onclick="getAllUniversities()">Fetch</button>
+            <pre id="universitiesOutput"></pre>
+        </div>
+        <div>
+            <h3>Get University by UID</h3>
+            <input type="text" id="universityUid" placeholder="Enter University UID">
+            <button onclick="getUniversityByUid()">Fetch</button>
+            <pre id="universityByUidOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a University</h3>
+            <textarea id="universityData" placeholder="Enter University Data (JSON)"></textarea>
+            <button onclick="addUniversity()">Add</button>
+            <pre id="addUniversityOutput"></pre>
+        </div>
+    </section>
+
+    <!-- Students Section -->
+    <section>
+        <h2>Students</h2>
+        <div>
+            <h3>Get All Students</h3>
+            <button onclick="getAllStudents()">Fetch</button>
+            <pre id="studentsOutput"></pre>
+        </div>
+        <div>
+            <h3>Get Student by ID</h3>
+            <input type="text" id="studentId" placeholder="Enter Student ID">
+            <button onclick="getStudentById()">Fetch</button>
+            <pre id="studentByIdOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a Student</h3>
+            <textarea id="studentData" placeholder="Enter Student Data (JSON)"></textarea>
+            <button onclick="addStudent()">Add</button>
+            <pre id="addStudentOutput"></pre>
+        </div>
+    </section>
+
+    <!-- Batches Section -->
+    <section>
+        <h2>Batches</h2>
+        <div>
+            <h3>Get All Batches</h3>
+            <button onclick="getAllBatches()">Fetch</button>
+            <pre id="batchesOutput"></pre>
+        </div>
+        <div>
+            <h3>Get Batches by University ID</h3>
+            <input type="text" id="universityIdForBatches" placeholder="Enter University ID">
+            <button onclick="getBatchesByUniversityId()">Fetch</button>
+            <pre id="batchesByUniversityOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a Batch</h3>
+            <textarea id="batchData" placeholder="Enter Batch Data (JSON)"></textarea>
+            <button onclick="addBatch()">Add</button>
+            <pre id="addBatchOutput"></pre>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section>
+        <h2>Courses</h2>
+        <div>
+            <h3>Get All Courses</h3>
+            <button onclick="getAllCourses()">Fetch</button>
+            <pre id="coursesOutput"></pre>
+        </div>
+        <div>
+            <h3>Get Course by ID</h3>
+            <input type="text" id="courseId" placeholder="Enter Course ID">
+            <button onclick="getCourseById()">Fetch</button>
+            <pre id="courseByIdOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a Course</h3>
+            <textarea id="courseData" placeholder="Enter Course Data (JSON)"></textarea>
+            <button onclick="addCourse()">Add</button>
+            <pre id="addCourseOutput"></pre>
+        </div>
+    </section>
+
+    <!-- Units and Questions Section -->
+    <section>
+        <h2>Units and Questions</h2>
+        <div>
+            <h3>Get All Units of a Course</h3>
+            <input type="text" id="courseIdForUnits" placeholder="Enter Course ID">
+            <button onclick="getUnits()">Fetch</button>
+            <pre id="unitsOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a Unit</h3>
+            <input type="text" id="courseIdForAddUnit" placeholder="Enter Course ID">
+            <textarea id="unitData" placeholder="Enter Unit Data (JSON)"></textarea>
+            <button onclick="addUnit()">Add</button>
+            <pre id="addUnitOutput"></pre>
+        </div>
+        <div>
+            <h3>Get All Sub-Units of a Unit</h3>
+            <input type="text" id="courseIdForSubUnits" placeholder="Enter Course ID">
+            <input type="text" id="unitIdForSubUnits" placeholder="Enter Unit ID">
+            <button onclick="getSubUnits()">Fetch</button>
+            <pre id="subUnitsOutput"></pre>
+        </div>
+        <div>
+            <h3>Add a Sub-Unit</h3>
+            <input type="text" id="courseIdForAddSubUnit" placeholder="Enter Course ID">
+            <input type="text" id="unitIdForAddSubUnit" placeholder="Enter Unit ID">
+            <textarea id="subUnitData" placeholder="Enter Sub-Unit Data (JSON)"></textarea>
+            <button onclick="addSubUnit()">Add</button>
+            <pre id="addSubUnitOutput"></pre>
+        </div>
+    </section>
+
+    <script>
+        // Example function to fetch all batches
+        async function getAllBatches() {
+            const response = await fetch('/batches');
+            const data = await response.json();
+            document.getElementById('batchesOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch batches by university ID
+        async function getBatchesByUniversityId() {
+            const universityId = document.getElementById('universityIdForBatches').value;
+            const response = await fetch(`/batches/university/${universityId}`);
+            const data = await response.json();
+            document.getElementById('batchesByUniversityOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a batch
+        async function addBatch() {
+            const batchData = JSON.parse(document.getElementById('batchData').value);
+            const response = await fetch('/batches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(batchData),
+            });
+            const data = await response.json();
+            document.getElementById('addBatchOutput').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+    <script>
+        // Example function to fetch all universities
+        async function getAllUniversities() {
+            const response = await fetch('/universities');
+            const data = await response.json();
+            document.getElementById('universitiesOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch a university by UID
+        async function getUniversityByUid() {
+            const uid = document.getElementById('universityUid').value;
+            const response = await fetch(`/universities/${uid}`);
+            const data = await response.json();
+            document.getElementById('universityByUidOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a university
+        async function addUniversity() {
+            const universityData = JSON.parse(document.getElementById('universityData').value);
+            const response = await fetch('/universities', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(universityData),
+            });
+            const data = await response.json();
+            document.getElementById('addUniversityOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch all students
+        async function getAllStudents() {
+            const response = await fetch('/students');
+            const data = await response.json();
+            document.getElementById('studentsOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch a student by ID
+        async function getStudentById() {
+            const studentId = document.getElementById('studentId').value;
+            const response = await fetch(`/students/${studentId}`);
+            const data = await response.json();
+            document.getElementById('studentByIdOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a student
+        async function addStudent() {
+            const studentData = JSON.parse(document.getElementById('studentData').value);
+            const response = await fetch('/students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(studentData),
+            });
+            const data = await response.json();
+            document.getElementById('addStudentOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch all courses
+        async function getAllCourses() {
+            const response = await fetch('/coursesmetadata');
+            const data = await response.json();
+            document.getElementById('coursesOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch a course by ID
+        async function getCourseById() {
+            const courseId = document.getElementById('courseId').value;
+            const response = await fetch(`/coursesmetadata/${courseId}`);
+            const data = await response.json();
+            document.getElementById('courseByIdOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a course
+        async function addCourse() {
+            const courseData = JSON.parse(document.getElementById('courseData').value);
+            const response = await fetch('/coursesmetadata', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(courseData),
+            });
+            const data = await response.json();
+            document.getElementById('addCourseOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch all units of a course
+        async function getUnits() {
+            const courseId = document.getElementById('courseIdForUnits').value;
+            const response = await fetch(`/courses/${courseId}/units`);
+            const data = await response.json();
+            document.getElementById('unitsOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a unit
+        async function addUnit() {
+            const courseId = document.getElementById('courseIdForAddUnit').value;
+            const unitData = JSON.parse(document.getElementById('unitData').value);
+            const d = {courseId : courseId, unitData: unitData};
+            console.log(JSON.stringify(d));
+            const response = await fetch(`/courses/${courseId}/units`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(d),
+            });
+            const data = await response.json();
+            document.getElementById('addUnitOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to fetch all sub-units of a unit
+        async function getSubUnits() {
+            const courseId = document.getElementById('courseIdForSubUnits').value;
+            const unitId = document.getElementById('unitIdForSubUnits').value;
+            const response = await fetch(`/courses/${courseId}/units/${unitId}/sub-units`);
+            const data = await response.json();
+            document.getElementById('subUnitsOutput').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Example function to add a sub-unit
+        async function addSubUnit() {
+            const courseId = document.getElementById('courseIdForAddSubUnit').value;
+            const unitId = document.getElementById('unitIdForAddSubUnit').value;
+            const subUnitData = JSON.parse(document.getElementById('subUnitData').value);
+            const d = {courseId, unitId, subUnitData };
+            console.log(JSON.stringify(d));
+            const response = await fetch(`/courses/${courseId}/units/${unitId}/sub-units`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(d),
+            });
+            const data = await response.json();
+            document.getElementById('addSubUnitOutput').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+
+</html>

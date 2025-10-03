@@ -1,0 +1,330 @@
+{
+    "course-id": "<course-id>",
+    "units": [
+        {
+            "unit": "unit1",
+            "unit-name": "unit-name",
+            "last-date" : "last-date",
+            "sub-units": [
+                {
+                    "sub-unit-name": "sub-unit-name",
+                    "sub-unit-pdf": "unit-pdf-link",
+                    "sub-unit-video": "unit-video-link",
+                    "mcq": [
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        },
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        }
+                    ],
+                    "coding": [
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": "code-template"
+                            }
+                        },
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": "code-template"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "sub-unit-name": "sub-unit-name",
+                    "sub-unit-pdf": "unit-pdf-link",
+                    "sub-unit-video": "unit-video-link",
+                    "mcq": [
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        },
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        }
+                    ],
+                    "coding": [
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": ""
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        },
+        {
+            "unit": "unit1",
+            "unit-name": "unit-name",
+            "last-date" : "last-date",
+            "sub-units": [
+                {
+                    "sub-unit-name": "sub-unit-name",
+                    "sub-unit-pdf": "unit-pdf-link",
+                    "sub-unit-video": "unit-video-link",
+                    "mcq": [
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        },
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        }
+                    ],
+                    "coding": [
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": "code-template"
+                            }
+                        },
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": "code-template"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "sub-unit-name": "sub-unit-name",
+                    "sub-unit-pdf": "unit-pdf-link",
+                    "sub-unit-video": "unit-video-link",
+                    "mcq": [
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        },
+                        {
+                            "question": "question",
+                            "options": [
+                                {
+                                    "option": "option1",
+                                    "is-answer": true
+                                },
+                                {
+                                    "option": "option2",
+                                    "is-answer": false
+                                }
+                            ]
+                        }
+                    ],
+                    "coding": [
+                        {
+                            "question-description": "question-description",
+                            "code-constraint": "code-constraint",
+                            "sample-input-output": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "test-cases": [
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                },
+                                {
+                                    "input": "input",
+                                    "output": "output"
+                                }
+                            ],
+                            "compiler-code": {
+                                "language": "language",
+                                "code": ""
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        }
+        
+    ]
+}
