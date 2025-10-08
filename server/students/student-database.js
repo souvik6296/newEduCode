@@ -759,54 +759,55 @@ async function getQuestionforStudent(courseId, unitId, subUnitId, studentId, que
 
 
 async function getAllowedAttempts(studentId, regId, type) {
-  const column =
-    type === "mcq"
-      ? "mcq_exam_allowed_attempts"
-      : "coding_exam_allowed_attempts";
+    const column =
+        type === "mcq"
+            ? "mcq_exam_allowed_attempts"
+            : "coding_exam_allowed_attempts";
 
-  const { data, error } = await supabaseClient
-    .from("studentexamattempts")
-    .select("mcq_exam_allowed_attempts, coding_exam_allowed_attempts")
-    .eq("studentid", studentId)
-    .eq("uni_reg_id", regId)
-    .single();
+    const { data, error } = await supabaseClient
+        .from("studentexamattempts")
+        .select("mcq_exam_allowed_attempts, coding_exam_allowed_attempts")
+        .eq("studentid", studentId)
+        .eq("uni_reg_id", regId)
+        .single();
 
-  if (error) throw error;
-  return {data, success: true};
+    if (error) throw error;
+    return { data, success: true };
 }
 
 async function updateAttemptCount(regId, type, updatedCount) {
-  const column =
-    type === "mcq"
-      ? "mcq_exam_allowed_attempts"
-      : "coding_exam_allowed_attempts";
+    const column =
+        type === "mcq"
+            ? "mcq_exam_allowed_attempts"
+            : "coding_exam_allowed_attempts";
 
 
 
-  // Update the count
-  const { error: updateError } = await supabaseClient
-    .from("studentexamattempts")
-    .update({ [column]: updatedCount })
-    .eq("uni_reg_id", regId);
+    // Update the count
+    const { error: updateError } = await supabaseClient
+        .from("studentexamattempts")
+        .update({ [column]: updatedCount })
+        .eq("uni_reg_id", regId);
 
-  if (updateError) throw updateError;
+    if (updateError) throw updateError;
 
-  return updatedCount;
+    return updatedCount;
 }
 
 
 
 async function resetAllAttempts() {
-  const { error } = await supabaseClient
-    .from("studentexamattempts")
-    .update({
-      mcq_exam_allowed_attempts: 1,
-      coding_exam_allowed_attempts: 1,
-    });
+    const { error } = await supabaseClient
+        .from("studentexamattempts")
+        .update({
+            mcq_exam_allowed_attempts: 1,
+            coding_exam_allowed_attempts: 1,
+        })
+        .neq('uni_reg_id', ''); // This matches all rows where uni_reg_id is not empty
 
-  if (error) throw error;
+    if (error) throw error;
 
-  return "All attempts reset to 1 successfully.";
+    return { success: true, message: "All attempts reset to 1 successfully." };
 }
 
 
@@ -1857,7 +1858,7 @@ async function saveMCQSubmission({ student_id, course_id, unit_id, sub_unit_id, 
                     if (!options || !Array.isArray(options) || q.code < 0 || q.code >= options.length) {
                         throw new Error(`Invalid option index for question_id: ${q.question_id}`);
                     }
-                    
+
                     if (q.code && options[q.code].isAnswer) {
                         questionToMarkMap[q.question_id] = true;
                     }
