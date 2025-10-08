@@ -42,87 +42,6 @@ const s3 = new S3Client({
   },
 });
 
-// const s3Client = new S3Client({
-//     region: "ap-southeast-1",
-//     credentials: {
-//         accessKeyId: "8FJTMT9D7XWGDTW9SA0D",
-//         secretAccessKey: "AmRqRjbDMzVfdf5goRCYBjLtChNhYDBziYOzpl4R"
-//     },
-//     endpoint: "https://s3.ap-southeast-1.wasabisys.com",
-//     forcePathStyle: true
-// });
-
-
-
-// const createToken = async (teacherId, studentList) => {
-//     // If this room doesn't exist, it'll be automatically created when the first
-//     // participant joins
-//     const roomName = `room${teacherId}`;
-//     // Identifier to be used for participant.
-//     // It's available as LocalParticipant.identity with livekit-client SDK
-//     const participantName = `teacher${teacherId}`;
-
-//     const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-//         identity: participantName,
-//         // Token to expire after 10 minutes
-//         ttl: '10m',
-//     });
-//     at.addGrant({ roomJoin: true, room: roomName });
-//     const roomToStudentList = allowedStudentCache[`roomToStudentList`] || {};
-
-//     roomToStudentList[roomName] = studentList;
-//     allowedStudentCache[`roomToStudentList`] = roomToStudentList;
-
-//     return await at.toJwt();
-// };
-
-// const getToken = async (ID) => {
-
-
-
-//     // return await createToken(roomName, [ID]);
-//     const participantName = `${ID}`;
-//     // const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-//     const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-//         identity: participantName,
-//         // Token to expire after 10 minutes
-//         ttl: '10m',
-//     });
-//     at.addGrant({ roomJoin: true, room: "room123456" });
-//     const data1 = {
-//         token: await at.toJwt(),
-//         success: true
-//     }
-//     return data1;
-
-
-
-//     // Iterate over every key of roomToStudentList and check for every list if the studentId is there join the student in that room
-//     const roomToStudentList = allowedStudentCache[`roomToStudentList`] || {};
-//     for (const [roomName, studentList] of Object.entries(roomToStudentList)) {
-//         if (studentList.includes(ID)) {
-//             // return await createToken(roomName, [ID]);
-//             const participantName = `${ID}`;
-//             const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
-//                 identity: participantName,
-//                 // Token to expire after 10 minutes
-//                 ttl: '10m',
-//             });
-//             at.addGrant({ roomJoin: true, room: roomName });
-//             const data = {
-//                 token: await at.toJwt(),
-//                 success: true
-//             }
-//             return data;
-//         }
-//     }
-//     const data = {
-//         msg: "Teacher not joined yet please wait...",
-//         success: false
-//     }
-
-//     return data;
-// };
 
 
 // Configure Multer
@@ -177,7 +96,10 @@ import {
   handleSaveMCQSubmission,
   handleVerifyStudent,
   sendKeytoBrowser,
-  handleAutoSave
+  handleAutoSave,
+  handleGetAllowedAttempts,
+  handleUpdateAttemptCount,
+  handleResetAllAttempts
 } from "./students/students-middle-controler.js";
 
 
@@ -274,7 +196,6 @@ app.post("/students/submit-and-compile", handleSubmitAndCompile); // Submit and 
 app.post("/students/submit-test", handleSubmitTest); // Submit test and update resume
 app.get("/students/profile/getProfile", handleGetStudentProfile); // Get student profile by studentId
 app.put("/students/update-fields/:studentId", handleUpdateStudentFields); // Update any number of student fields
-// app.get("/students/test-result-status", handleGetTestResultStatus); // Get test result status
 app.post("/students/test-result-status", handleGetTestResultStatus); // Get test result status and summary by unique fields
 app.post("/students/upload-image", uploadMiddleware.single("image"), handleUploadStudentImage); // Upload student image and get download URL
 app.post("/students/resume-test", handleResumeTest); // Resume test and save last submissions
@@ -286,6 +207,13 @@ app.post("/students/gemini-chat", handleGeminiChat); // Chat with Gemini AI
 // Route to check test security code
 app.post("/students/check-test-security", handleCheckTestSecurityCode); // Check test security code
 app.post("/students/upload-student-resource", uploadMiddleware.single("resource"), handleUploadStudentResource); // Upload student resource file
+// Routes for handling allowed attempts
+app.post("/students/allowed-attempts", handleGetAllowedAttempts); // Fetch allowed attempts for a student
+// Routes for updating attempt count
+app.put("/admin/update-attempt-count", handleUpdateAttemptCount); // Update attempt count
+// Routes for resetting all attempts
+app.post("/admin/reset-all-attempts", handleResetAllAttempts); // Reset all attempts
+
 
 // Routes for Courses
 // --------------------------------------------------------------------------------
@@ -356,72 +284,6 @@ async function getUniqueFilename(bucket, baseKey) {
 }
 
 
-// app.post("/startRecording", async (req, res) => {
-//     const { roomName, participantId, studentName } = req.body;
-//     const today = new Date();
-
-//     const dd = String(today.getDate()).padStart(2, '0');
-//     const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-//     const yyyy = today.getFullYear();
-
-//     const formattedDate = `${dd}-${mm}-${yyyy}`;
-
-//     const bucket = "studentrecording";
-//     const baseKey = `recordings/${formattedDate}/${roomName.replace('room', '')}/${studentName}/${studentName}.webm`;
-//     const uniqueKey = await getUniqueFilename(bucket, baseKey);
-
-//     const output = new DirectFileOutput({
-//         filepath: uniqueKey,
-//         output: {
-
-//             case: 's3',
-//             value: {
-//                 accessKey: "8FJTMT9D7XWGDTW9SA0D",
-//                 secret: "AmRqRjbDMzVfdf5goRCYBjLtChNhYDBziYOzpl4R",
-//                 region: "ap-southeast-1",
-//                 endpoint: "https://s3.ap-southeast-1.wasabisys.com", // region-specific
-//                 bucket: "studentrecording",
-//                 forcePathStyle: true
-//             }
-//         }
-
-//     });
-
-
-
-//     try {
-//         const egressInfo = await egressClient.startTrackEgress(roomName, output, participantId);
-
-//         res.send(egressInfo);
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: err.message });
-//     }
-// });
-
-
-// app.post("/stopRecording", async (req, res) => {
-//     const { egressId } = req.body;
-//     try {
-//         await egressClient.stopEgress(egressId);
-//         res.json({ success: true });
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// });
-
-// app.get("/getegress/:egressId", async (req, res) => {
-//     const { egressId } = req.params;
-//     try {
-//         const egressList = await egressClient.listEgress();
-//         const egressInfo = egressList.find(e => e.egressId === egressId);
-//         res.json(egressInfo);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// });
-
-
 
 
 
@@ -437,7 +299,7 @@ app.post("/api/uploads/initiate", async (req, res) => {
 
   const formattedDate = `${dd}-${mm}-${yyyy}`;
 
-  const bucket = "studentrecording";
+  const bucket = "studentsrecording";
   const baseKey = `recordings/${formattedDate}/${roomName.replace('room', '')}/${studentRegId}/${studentRegId}.webm`;
   const uniqueKey = await getUniqueFilename(bucket, baseKey);
   // const filename = `${prefix || "recordings"}/${Date.now()}-${crypto.randomUUID()}.webm`;
@@ -502,3 +364,4 @@ app.get("/getKey", sendKeytoBrowser);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+

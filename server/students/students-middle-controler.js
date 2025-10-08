@@ -90,7 +90,10 @@ import {
     saveMCQSubmission,
     checkTestSecurityCode,
     uploadStudentResource,
-    autosave
+    autosave,
+    getAllowedAttempts,
+    updateAttemptCount,
+    resetAllAttempts
 } from "./student-database.js";
 // Controller to check test security code
 async function handleCheckTestSecurityCode(req, res) {
@@ -649,6 +652,69 @@ async function handleSaveMCQSubmission(req, res) {
     }
 }
 
+// Controller to handle fetching allowed attempts for a student
+async function handleGetAllowedAttempts(req, res) {
+    try {
+        const token = req.headers['authorization'].split(' ')[1]; // Bearer token
+        const studentId0 = req.headers['studentid'];      // custom header
+        const isValidSession = await verifyStudentSession(token, studentId0);
+        if (!isValidSession) {
+            return res.status(401).json({ session_expired: true, success: false, message: "Invalid or expired session. Please log in again." });
+        }
+
+        const {studentId, regId, type} = req.body;
+        if (!regId || !type || !studentId) {
+            return res.status(400).json({ success: false, message: "Missing required fields: regId, type, or studentId" });
+        }
+
+        const result = await getAllowedAttempts(studentId, regId, type);
+        if (result.success) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json(result); // Return 404 if no data is found
+        }
+    } catch (error) {
+        console.error("Error in handleGetAllowedAttempts:", error);
+        res.status(500).json({ success: false, message: "Unexpected error occurred", error });
+    }
+}
+
+// Controller to handle updating attempt count
+async function handleUpdateAttemptCount(req, res) {
+    try {
+        const { regId, type, updatedCount } = req.body;
+        if (!regId || !type || updatedCount === undefined) {
+            return res.status(400).json({ success: false, message: "Missing required fields: regId, type, or updatedCount" });
+        }
+
+        const result = await updateAttemptCount(regId, type, updatedCount);
+        if (result.success) {
+            res.status(200).json(result);
+        } else {
+            res.status(400).json(result);
+        }
+    } catch (error) {
+        console.error("Error in handleUpdateAttemptCount:", error);
+        res.status(500).json({ success: false, message: "Unexpected error occurred", error });
+    }
+}
+
+// Controller to handle resetting all attempts
+async function handleResetAllAttempts(req, res) {
+    try {
+
+        const result = await resetAllAttempts();
+        if (result.success) {
+            res.status(200).json(result);
+        } else {
+            res.status(400).json(result);
+        }
+    } catch (error) {
+        console.error("Error in handleResetAllAttempts:", error);
+        res.status(500).json({ success: false, message: "Unexpected error occurred", error });
+    }
+}
+
 // Export all controllers
 export {
     sendKeytoBrowser,
@@ -676,5 +742,8 @@ export {
     handleGeminiChat,
     handleUploadStudentResource,
     handleSaveMCQSubmission,
-    handleAutoSave
+    handleAutoSave,
+    handleGetAllowedAttempts,
+    handleUpdateAttemptCount,
+    handleResetAllAttempts
 };

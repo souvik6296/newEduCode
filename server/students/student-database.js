@@ -464,58 +464,6 @@ async function getQuestionforStudent(courseId, unitId, subUnitId, studentId, que
         };
 
 
-        // Step 3: If resumed data exists, return those specific questions with last submission
-        // if (resumeData && questionType === "Coding" && resumeData.resumed_coding_question_ids?.length > 0) {
-        //     const coding = subUnitData.coding || {};
-        //     const selected = await Promise.all(resumeData.resumed_coding_question_ids.map(async (id) => {
-        //         const q = coding[id];
-        //         if (!q) return null;
-
-        //         // Get last submission for this question
-        //         const lastSubmission = await getLastSubmission(id);
-
-        //         const { ["compiler-code"]: _, ["hidden-test-cases"]: __, ...rest } = q;
-        //         return {
-        //             id,
-        //             ...rest,
-        //             totalmarks: q["hidden-test-cases"] ? q["hidden-test-cases"].length * 10 : 0, // Assuming each hidden test case is worth 10 marks
-        //             lastSubmission: lastSubmission || null
-        //         };
-        //     }));
-
-        //     questionsToReturn.codingQuestions = selected.filter(Boolean);
-        //     questionsToReturn.attempt = attempt_count;
-        //     if (subUnitData.sub_type == "exam") {
-        //         questionsToReturn.duration = subUnitData["coding-duration-ms"];
-        //     }
-
-        //     const { data: timeData, error: timeError } = await supabaseClient
-        //         .from("test_time_sync")
-        //         .select("starttime, timeleft, time_spent, total_duration")
-        //         .eq("studentid", studentId)
-        //         .eq("courseid", courseId)
-        //         .eq("unitid", unitId)
-        //         .eq("subunitid", subUnitId)
-        //         .eq("testtype", "coding");
-
-        //     if (timeError) {
-        //         return { success: false, message: "Error fetching test sync record", error: timeError };
-        //     }
-
-        //     const record = timeData && timeData.length > 0 ? timeData[0] : null;
-        //     if (!record) {
-        //         return { success: false, message: "No matching test_time_sync record found" };
-        //     }
-
-        //     questionsToReturn.timeData = { timeLeft: record.timeleft, time_spent: record.time_spent }
-
-        //     const e_data = await encryptData(questionsToReturn);
-        //     return {
-        //         success: true,
-        //         message: "Resumed questions fetched successfully",
-        //         data: e_data
-        //     };
-        // }
 
         // Step 3: If resumed data exists, return those specific questions with last submission
         if (resumeData && questionType === "Coding" && resumeData.resumed_coding_question_ids?.length > 0) {
@@ -810,9 +758,56 @@ async function getQuestionforStudent(courseId, unitId, subUnitId, studentId, que
 
 
 
+async function getAllowedAttempts(studentId, regId, type) {
+  const column =
+    type === "mcq"
+      ? "mcq_exam_allowed_attempts"
+      : "coding_exam_allowed_attempts";
+
+  const { data, error } = await supabaseClient
+    .from("studentexamattempts")
+    .select("mcq_exam_allowed_attempts, coding_exam_allowed_attempts")
+    .eq("studentid", studentId)
+    .eq("uni_reg_id", regId)
+    .single();
+
+  if (error) throw error;
+  return {data, success: true};
+}
+
+async function updateAttemptCount(regId, type, updatedCount) {
+  const column =
+    type === "mcq"
+      ? "mcq_exam_allowed_attempts"
+      : "coding_exam_allowed_attempts";
 
 
 
+  // Update the count
+  const { error: updateError } = await supabaseClient
+    .from("studentexamattempts")
+    .update({ [column]: updatedCount })
+    .eq("uni_reg_id", regId);
+
+  if (updateError) throw updateError;
+
+  return updatedCount;
+}
+
+
+
+async function resetAllAttempts() {
+  const { error } = await supabaseClient
+    .from("studentexamattempts")
+    .update({
+      mcq_exam_allowed_attempts: 1,
+      coding_exam_allowed_attempts: 1,
+    });
+
+  if (error) throw error;
+
+  return "All attempts reset to 1 successfully.";
+}
 
 
 
@@ -851,117 +846,6 @@ function decryptBase64(data) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-// async function autosave({ code, studentId, courseId, unitId, subUnitId, questionId, attempt, type }) {
-//     if (!studentId || !courseId || !unitId || !subUnitId || !questionId || attempt === undefined) {
-//         return { success: false, message: "Missing required identifiers" };
-//     }
-//     try {
-//         const now = new Date().toISOString();
-
-//         const { data: timeData, error: timeError } = await supabaseClient
-//             .from("test_time_sync")
-//             .select("starttime", "timeleft", "time_spent", "total_duration")
-//             .eq("studentid", studentId)
-//             .eq("courseid", courseId)
-//             .eq("unitid", unitId)
-//             .eq("subunitid", subUnitId)
-//             .eq("testtype", type);
-
-//         if (timeError) {
-//             // throw new Error(timeError);
-//             return { success: false, error: timeError };
-//         }
-
-//         // since timeData is array, pick first record
-//         const record = timeData && timeData.length > 0 ? timeData[0] : null;
-//         if (!record) {
-//             return { success: false, message: "No matching test_time_sync record found" };
-//         }
-
-//         const nowMillis = new Date().getTime();
-//         const newTimeSpent = nowMillis - Number(record.starttime);  // both must be millis
-//         const newTimeLeft = record.total_duration == -1 ? -1 : (record.total_duration - newTimeSpent);
-
-//         const payload = {
-//             studentid: studentId,
-//             courseid: courseId,
-//             unitid: unitId,
-//             subunitid: subUnitId,
-//             testtype: type,
-//             starttime: record.starttime,
-//             timeleft: newTimeLeft,
-//             time_spent: newTimeSpent,
-//             total_duration: record.total_duration
-//         };
-
-//         // use upsert so if record exists for this student/test, it updates instead of duplicate
-//         const { data, error } = await supabaseClient
-//             .from("test_time_sync")
-//             .upsert(payload, {
-//                 onConflict: "studentid,courseid,unitid,subunitid,testtype" // composite uniqueness
-//             })
-//             .select();
-
-//         if (error) {
-//             // throw new Error(error);
-//             console.error("Error saving test_time_sync:", error);
-//             return { success: false, message: "Failed to save time sync", error };
-//         }
-
-
-
-//         // First try to update existing row
-//         const { data: updated, error: updateError } = await supabaseClient
-//             .from("student_submission")
-//             .update({
-//                 last_submitted_code: code,
-//                 last_submission: now
-//             })
-//             .eq("student_id", studentId)
-//             .eq("course_id", courseId)
-//             .eq("unit_id", unitId)
-//             .eq("sub_unit_id", subUnitId)
-//             .eq("question_id", questionId)
-//             .eq("attempt", attempt)
-//             .select();
-
-//         if (updateError) {
-//             // throw new Error(updateError);
-//             return { success: false, message: "Failed to update autosave", error: updateError };
-//         }
-
-//         // If no row was updated → insert new with status "resumed"
-//         if (!updated || updated.length === 0) {
-//             const { data: inserted, error: insertError } = await supabaseClient
-//                 .from("student_submission")
-//                 .insert([{
-//                     student_id: studentId,
-//                     course_id: courseId,
-//                     unit_id: unitId,
-//                     sub_unit_id: subUnitId,
-//                     question_id: questionId,
-//                     attempt,
-//                     last_submitted_code: code,
-//                     last_submission: now,
-//                     status: "resumed"
-//                 }])
-//                 .select();
-
-//             if (insertError) {
-//                 // throw new Error(insertError);
-//                 return { success: false, message: "Failed to insert autosave", error: insertError };
-//             }
-
-//             return { success: true, message: "Autosave inserted", data: { newTimeSpent, newTimeLeft } };
-//         }
-
-//         return { success: true, message: "Autosave updated", data: { newTimeSpent, newTimeLeft } };
-
-//     } catch (error) {
-//         return { success: false, message: "Unexpected error occurred in autosave", error };
-//     }
-// }
 
 async function autosave({ code, studentId, courseId, unitId, subUnitId, questionId, attempt, type }) {
     if (!studentId || !courseId || !unitId || !subUnitId || !questionId || attempt === undefined) {
@@ -2066,5 +1950,8 @@ export {
     checkTestSecurityCode,
     uploadStudentResource,
     saveMCQSubmission,
-    autosave
+    autosave,
+    getAllowedAttempts,
+    updateAttemptCount,
+    resetAllAttempts
 };

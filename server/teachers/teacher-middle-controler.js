@@ -217,13 +217,13 @@ async function handleCreateToken(req, res) {
 // Get a token
 async function handleGetToken(req, res) {
     try {
-        const { studentId } = req.params;
+        const { ID } = req.query;
 
-        if (!studentId) {
+        if (!ID) {
             return res.status(400).json({ success: false, message: "Missing student ID" });
         }
 
-        const result = await getToken(studentId);
+        const result = await getToken(ID);
         if (!result.success) {
             return res.status(404).json(result);
         }

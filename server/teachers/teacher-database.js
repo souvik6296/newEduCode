@@ -7,8 +7,8 @@ import { AccessToken } from 'livekit-server-sdk';
 import nodemailer from 'nodemailer';
 
 const LIVEKIT_URL = "wss://livekit.theeducode.com";
-const LIVEKIT_API_KEY = "APIeLx3SWyKp8SF";
-const LIVEKIT_API_SECRET = "1dJG9HkIxtvrFajoqjNDbdWPmvN6bYgg6kfYwBIECmG";
+const LIVEKIT_API_KEY = "APIdZvcW3DrSKxq";
+const LIVEKIT_API_SECRET = "5NMPqZztCfC13uiMM7H3frwx6Wy2LqpydehFR8ThLpBA";
 const allowedStudentCache = {};
 
 const db = database;
